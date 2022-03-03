@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const {log} = require("nodemon/lib/utils");
 
 exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
@@ -14,10 +15,14 @@ exports.postAddProduct = (req, res, next) => {
     const price = req.body.price;
     const description = req.body.description;
     const product = new Product(null, title, imageUrl, description, price);
-    product.save();
+    product.save()
+        .then(([result]) => {
+            console.log(result.insertId)
+        })
+        .catch(err => console.log(err));
     res.redirect('/');
 
-    
+
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -52,7 +57,12 @@ exports.postEditProduct = (req, res, next) => {
         updatedDesc,
         updatedPrice
     );
-    updatedProduct.save();
+    updatedProduct.updateById(prodId)
+        .then(
+            ([result]) => {
+                console.log(result)
+            })
+        .catch(err => console.log(err));
     res.redirect('/admin/products');
 };
 
